@@ -80,18 +80,19 @@ if (!transfers.Contains(trans)) transfers.Add(trans);
 ```
 
 And `UIPartActionController.UpdateActiveWindows`, which updates every open window once per frame, starts
-with `transfers.Clear()`. The list therefore only ever holds the controls created or refreshed since the
-start of the frame. Two controls created on the same frame, or refreshed by the same opening window, are
-paired; a control created one frame after the others is paired with none of them, and they not with it.
+with `transfers.Clear()`. The list therefore only ever holds the controls created or refreshed since
+`UpdateActiveWindows` last started. Two controls created or refreshed between the same two runs of it are
+paired; a control created after a run has emptied the list, while the others were registered before, is
+paired with none of them, and they not with it.
 
-Every window updates its items once per frame, and a transfer control that is no longer valid
-(`UIPartActionResourceTransfer.IsItemValid`: `ShowTransfers` false, say) is destroyed, then created again
-on the frame where it is valid again. Most of the time, all the controls of a resource are destroyed and
-created again together, and stay paired:
+Every window updates its items in `UpdateActiveWindows`, right after the list is emptied, and a transfer
+control that is no longer valid (`UIPartActionResourceTransfer.IsItemValid`: `ShowTransfers` false, say) is
+destroyed, then created again on the first update where it is valid again. Most of the time, all the
+controls of a resource are destroyed and created again together, and stay paired:
 
 - **The window of a part without any of the resources** (an engine, a docking port) makes `ShowTransfers`
   false for all of them: every transfer control of every window goes. When that window closes, they all
-  come back on the same frame.
+  come back in the same update.
 - **A window that opens** pairs its own controls through `SelectPart`, which also refreshes every window
   holding the resource of its first transfer control, and builds again (`CreatePartList`) the windows
   holding that resource without a transfer control for it.
@@ -99,18 +100,39 @@ created again together, and stay paired:
 The case that breaks is a part holding only some of the resources:
 
 1. The tanker's window is pinned: an FL-T400, with liquid fuel and oxidizer.
-2. The window of a Mk1 Liquid Fuel Fuselage opens. `ShowTransfers` is false for oxidizer only: on the
-   next frame, the tanker's oxidizer control is destroyed. Its liquid fuel control stays.
+2. The window of a Mk1 Liquid Fuel Fuselage opens. `ShowTransfers` is false for oxidizer only: at the
+   next update of the windows, the tanker's oxidizer control is destroyed. Its liquid fuel control stays.
+
+   ![The tanker's window without an oxidizer transfer control, next to the fuselage's](../imgs/the-culprit/fuel-only-1-fuselage.jpg)
+
 3. The window of an FL-T200, with liquid fuel and oxidizer, opens, which closes the fuselage's. Its two
    controls are created; `SelectPart` refreshes the windows holding its first resource, liquid fuel, and
    the two liquid fuel controls are paired. The tanker's window still holds a liquid fuel transfer control,
    so it is not built again.
-4. On the next frame, `UpdateActiveWindows` empties the list, and the tanker's window creates its
-   oxidizer control again. It is paired with what the list holds: nothing.
+4. The next run of `UpdateActiveWindows` (on the next frame, after a click of the mouse) empties the
+   list, then the tanker's window creates its oxidizer control again. It is paired with what the list holds:
+   nothing. The game's own windows do not show it: their oxidizer rows have their In and Out buttons, as
+   when they are paired. The badges of KSP Diag - Resource Transfer do: `→ —` on both oxidizer rows.
+
+   ![The tanker's window and the FL-T200's, both oxidizer rows paired with nothing](../imgs/the-culprit/fuel-only-2-tank.jpg)
+
+*KSP 1.12.5 without this mod, with KSP Community Fixes, in French (Sortie is Out, Entrée is In, Ergol
+liquide is liquid fuel, Oxydant oxidizer), with
+[KSP Diag - Resource Transfer](https://github.com/lhervier/KSP-Diag-ResourceTransfer): its letters mark the
+windows, A for the tanker's, B for the fuselage's, C for the FL-T200's, and its badge on each transfer row
+gives the letters of the windows the row is paired with, in brackets when closed. The two windows cropped
+from the screenshots of the [liquid-fuel-only protocol](checking-the-culprit-fuel-only.md#the-protocol),
+after its steps 2 and 3: the tanker's on the left, pinned, the other one on the right.*
 
 From then on, the oxidizer controls of the tanker and of the FL-T200 have no target. In makes the control
-take from nobody: it goes to `In` with nothing to share between (`transferFraction` 0) and stops on the next
-frame, so the button seems to do nothing. Out makes it send to nobody: it goes to `Out` and shows Stop,
-and nothing moves. Closing the FL-T200's window leaves a single window open, which takes every transfer
-control away (`ShowTransfers` wants two windows); opening it again brings them all back on the same frame,
-paired.
+take from nobody: it goes to `In` with nothing to share between (`transferFraction` 0) and stops at the
+next update of the windows, so the button seems to do nothing. Out makes it send to nobody: it goes to `Out` and shows Stop,
+and nothing moves.
+
+![Five seconds after In under the FL-T200's oxidizer, no oxidizer has moved](../imgs/the-culprit/fuel-only-3-five-seconds-later.jpg)
+
+*The same install and protocol: the two windows at its step 5, five seconds after In was pressed under
+the FL-T200's oxidizer.*
+
+Closing the FL-T200's window leaves a single window open, which takes every transfer
+control away (`ShowTransfers` wants two windows); opening it again brings them all back together, paired.

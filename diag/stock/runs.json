@@ -57,7 +57,7 @@
      "pinned": true,
      "resources": {
       "LiquidFuel": {
-       "amount": 175.5,
+       "amount": 175.41,
        "max": 180,
        "buttons": [
         "stop"
@@ -78,7 +78,7 @@
      "pinned": false,
      "resources": {
       "LiquidFuel": {
-       "amount": 4.5,
+       "amount": 4.59,
        "max": 90,
        "buttons": [
         "stop"

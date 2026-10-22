@@ -19,6 +19,10 @@ five seconds.
 Each protocol loads the save first. The windows are dragged apart, the tanker's to the left and the other one
 to the right, and a screenshot is taken at every step. The script prints what the windows show and writes it to
 runs.json. KSP is left running at the end.
+
+With KSP Diag - Resource Transfer installed as well, its window is moved between the two part action windows,
+its journal is cleared when the save is loaded, and its Log button is pressed at the end of each protocol:
+its reading goes to KSP.log, and its badges show on the screenshots.
 """
 import argparse
 import json
@@ -31,6 +35,10 @@ URL = None
 # Where the windows are dragged, in pixels from the top left corner of the game's window (1280 x 720).
 LEFT = (40, 120)
 RIGHT = (980, 120)
+DIAG_WINDOW = (440, 100)
+
+# Whether KSP Diag - Resource Transfer is installed: its tools are then offered by the server.
+DIAG = False
 
 
 def call(tool, **args):
@@ -47,6 +55,14 @@ def call(tool, **args):
         return json.loads(text)
     except ValueError:
         return text
+
+
+def tool_names():
+    """The names of the tools KSP-Util-MCPServer offers, those of other mods included."""
+    body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}).encode()
+    request = urllib.request.Request(URL, body, {"Content-Type": "application/json"})
+    with urllib.request.urlopen(request, timeout=60) as response:
+        return [tool["name"] for tool in json.loads(response.read())["result"]["tools"]]
 
 
 def log(*parts):
@@ -106,7 +122,17 @@ def start(options):
     # Long enough for the crew portrait to show the kerbal rather than static.
     time.sleep(6)
     call("set_camera", distance=14, heading=20, pitch=5, fov=60)
+    if DIAG:
+        call("resourcetransfer_move_window", x=DIAG_WINDOW[0], y=DIAG_WINDOW[1])
+        call("resourcetransfer_clear_journal")
     return parts_by_name()
+
+
+def finish(record):
+    """With KSP Diag - Resource Transfer, presses its Log button: its reading goes to KSP.log."""
+    if DIAG:
+        call("resourcetransfer_log")
+    return record
 
 
 def filling(options, out):
@@ -130,7 +156,7 @@ def filling(options, out):
     step(record, out, "3-tank-full")
     time.sleep(10)
     step(record, out, "4-ten-seconds-later")
-    return record
+    return finish(record)
 
 
 def fuel_only(options, out):
@@ -146,14 +172,14 @@ def fuel_only(options, out):
     call("press_part_button", part=tank, resource="Oxidizer", transfer="in")
     time.sleep(5)
     step(record, out, "3-five-seconds-later")
-    return record
+    return finish(record)
 
 
 PROTOCOLS = {"filling": filling, "fuel-only": fuel_only}
 
 
 def main():
-    global URL
+    global URL, DIAG
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--folder", required=True, help="the sandbox game under saves/ the save was copied into")
     parser.add_argument("--save", default="transfer-kerbin", help="the save, without .sfs")
@@ -162,6 +188,8 @@ def main():
     parser.add_argument("--port", type=int, default=8770, help="the port of KSP-Util-MCPServer")
     options = parser.parse_args()
     URL = "http://127.0.0.1:%d/mcp/" % options.port
+    DIAG = "resourcetransfer_read" in tool_names()
+    log("KSP Diag - Resource Transfer", "installed" if DIAG else "not installed")
 
     names = list(PROTOCOLS) if options.protocol == "both" else [options.protocol]
     runs = {}

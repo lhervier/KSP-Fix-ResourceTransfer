@@ -37,11 +37,15 @@ to tanks of liquid fuel and oxidizer, opening one of the former and then one of 
 oxidizer buttons of both windows unpaired. Pressing In or Out on them does nothing; the liquid fuel still
 moves. Closing the windows and opening them again pairs them again.
 
-<img src="imgs/checking-the-culprit-filling/stock/4-ten-seconds-later.jpg" width="49%" alt="The tanker keeps Stop after the tank it filled is full"> <img src="imgs/checking-the-culprit-fuel-only/stock/3-five-seconds-later.jpg" width="49%" alt="In on the oxidizer of the tank does nothing">
+<img src="imgs/why-stuck-transfers-matter/filling.jpg" width="49%" alt="The tanker keeps Stop after the tank it filled is full"> <img src="imgs/why-stuck-transfers-matter/fuel-only.jpg" width="49%" alt="The oxidizer transfer controls of both windows have no target">
 
 *KSP 1.12.5 without this mod, with [KSP Community Fixes](https://github.com/KSPModdingLibs/KSPCommunityFixes),
-in French (Sortie is Out, Entrée is In). Left, the [filling protocol](docs/checking-the-culprit-filling.md#the-protocol):
-ten seconds after the FL-T200 on the right was filled from the FL-T400 on the left. Right, the
+in French (Sortie is Out, Entrée is In, Ergol liquide is liquid fuel, Oxydant oxidizer), with
+[KSP Diag - Resource Transfer](https://github.com/lhervier/KSP-Diag-ResourceTransfer), whose letters mark
+the windows and whose badges, on each transfer row, give the letters of the windows the row is paired with
+(`—`: none). Two windows cropped from the screenshots of each protocol. Left, the
+[filling protocol](docs/checking-the-culprit-filling.md#the-protocol): ten seconds after the FL-T200 on the
+right was filled from the FL-T400 on the left. Right, the
 [liquid-fuel-only protocol](docs/checking-the-culprit-fuel-only.md#the-protocol): five seconds after In
 was pressed for the oxidizer of the FL-T200, once the window of a Mk1 Liquid Fuel Fuselage had been
 opened.*
@@ -59,11 +63,11 @@ long as any tank it is paired with is busy, sending or taking alike: two tanks f
 each other going once the third is empty.
 
 **How controls are paired.** `UIPartActionController.SetupResourceTransfer` pairs a new control with the
-controls listed since the start of the frame, and `UIPartActionController.UpdateActiveWindows` empties
-that list every frame. A control built again one frame after the others is paired with none. The window
-of a tank of liquid fuel only takes the oxidizer controls out of every window, and the next tank's window
-brings them back one frame apart: the tanker's oxidizer control and the new tank's are then paired with
-nothing.
+controls of a list that `UIPartActionController.UpdateActiveWindows` empties every time it runs,
+once per frame. A control built again after the list has been emptied, while the others were listed
+before, is paired with none. The window of a tank of liquid fuel only takes the oxidizer controls out of
+every window, and the next tank's window brings them back on either side of that emptying: the tanker's
+oxidizer control and the new tank's are then paired with nothing.
 
 **→ Full chapter: [The culprit](docs/the-culprit.md)**
 
@@ -93,7 +97,7 @@ mod, it shows In and Out again as soon as the FL-T200 is full, and the mod's log
 
 With the tanker's window pinned, the windows of a Mk1 Liquid Fuel Fuselage and then of an empty FL-T200 are
 opened, and In is pressed for the FL-T200's oxidizer. On stock, five seconds later, no oxidizer has moved;
-with this mod, 27.72 units have, and the mod's log says it paired the tanker's oxidizer control.
+with this mod, 27.61 units have, and the mod's log says it paired the tanker's oxidizer control.
 
 **→ Full chapter: [Checking the culprit: a tank of liquid fuel only](docs/checking-the-culprit-fuel-only.md)**
 

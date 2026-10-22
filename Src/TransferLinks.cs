@@ -7,10 +7,10 @@ namespace com.github.lhervier.ksp.fix.resourcetransfer
     /// Links every resource transfer control that is set up with the controls of the same resource that the
     /// other open part action windows show, so that its In and Out buttons have tanks to work with.
     ///
-    /// Stock links a control only with the controls registered since the start of the frame:
-    /// UIPartActionController.UpdateActiveWindows empties that list every frame, and only a control just
-    /// created or refreshed by a window that opens is registered. A control built again one frame after the
-    /// others is linked with none. Opening the window of a tank that holds only one of the resources of the
+    /// Stock links a control only with the controls registered since UIPartActionController.UpdateActiveWindows
+    /// last emptied that list (it does so every time it runs, once per frame), and only a control just
+    /// created or refreshed by a window that opens is registered. A control built again after the list has
+    /// been emptied, while the others were registered before, is linked with none. Opening the window of a tank that holds only one of the resources of the
     /// others (liquid fuel only, next to tanks of liquid fuel and oxidizer) does it: the oxidizer buttons
     /// leave every window, and come back unlinked, in the window of the next tank and in the ones still open.
     /// </summary>
