@@ -29,8 +29,9 @@ namespace com.github.lhervier.ksp.fix.resourcetransfer
 
         /// <summary>
         /// Links <paramref name="trans"/> both ways with every transfer control of the same resource, on another
-        /// part, that an open window of <paramref name="__instance"/> shows. Stock then runs as usual: it only
-        /// adds links, and adds none twice.
+        /// part, that an open window of <paramref name="__instance"/> shows, and removes from the targets of those
+        /// controls the ones that have been destroyed. Stock then runs as usual: it only adds links, and adds none
+        /// twice.
         /// </summary>
         private static void Prefix(UIPartActionController __instance, UIPartActionResourceTransfer trans)
         {
@@ -58,6 +59,17 @@ namespace com.github.lhervier.ksp.fix.resourcetransfer
                     if (other.Resource.info.id != resourceId || other.Part == trans.Part)
                     {
                         continue;
+                    }
+                    // A control with a destroyed target is invalid, and its window builds it again
+                    // (UIPartActionResourceTransfer.IsItemValid). trans usually replaces such a target: the window
+                    // destroys the old control at once (DestroyImmediate) before building this one. Left in place,
+                    // the dead link would rebuild other, whose replacement would leave a dead link in trans, and
+                    // so on, every frame.
+                    int dropped = other.Targets.RemoveAll(target => target == null);
+                    if (dropped > 0 && Log.IsDebugEnabled)
+                    {
+                        Log.Debug($"Dropped {dropped} destroyed control(s) from the {other.Resource.resourceName} " +
+                            $"transfer of {IdleTransferStop.PartName(other.Part)}");
                     }
                     if (!other.Targets.Contains(trans))
                     {

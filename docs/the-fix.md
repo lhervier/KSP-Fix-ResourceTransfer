@@ -41,6 +41,16 @@ Stock then runs as usual; a pair already made is not made twice.
 The mod pairs with what the player sees, whatever the frame the control was created on. A control on a
 closed window is not paired with: as on stock, opening that window pairs it.
 
+While it pairs, the mod also drops, from the pairs of each control it pairs the new one with, the controls
+that have been destroyed. Stock judges a control with a destroyed pair invalid
+(`UIPartActionResourceTransfer.IsItemValid`), and its window builds it again; a window destroys an invalid
+control before building the new one. When a window is built again, its old controls are left in the pairs of
+the other windows' controls; on stock, the controls built again in turn are paired with nothing, and that
+ends there. Since the mod pairs the new ones, a destroyed pair left in place would have the other window's
+control built again, whose new control would leave a destroyed pair in turn, and so on, on every frame. A
+window built again while paired is what
+[Checked: a tank's contents switched in flight](checking-in-flight-switch.md) plays.
+
 At `Debug`, the mod writes one line for each control it pairs with tanks that stock does not pair it with
 at that point:
 
@@ -48,9 +58,15 @@ at that point:
 [KSPFixResourceTransfer] [DEBUG] Linked the Oxidizer transfer of fuelTank 1223746542 with 1 tank(s) stock does not link it with here, 1 in all
 ```
 
+and one line for each control it drops destroyed controls from:
+
+```
+[KSPFixResourceTransfer] [DEBUG] Dropped 1 destroyed control(s) from the LiquidFuel transfer of fuelTankSmall 649418999
+```
+
 ## What it leaves alone
 
 - How much moves, and how fast: the share each tank takes, and the order of the windows, are stock's.
 - When a transfer control shows, and which buttons it shows in each state.
 - The In, Out and Stop buttons themselves, and the input locks they obey.
-- Pairs that stock makes: the mod only adds pairs, and never removes one.
+- Pairs that stock makes: the mod only adds pairs, and removes none but the pairs with destroyed controls.

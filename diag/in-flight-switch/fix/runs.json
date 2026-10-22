@@ -1,0 +1,162 @@
+{
+ "in-flight-switch": [
+  {
+   "step": "1-before",
+   "windows": [
+    {
+     "part": 1223746542,
+     "pinned": true,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 180,
+       "max": 180,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      },
+      "Oxidizer": {
+       "amount": 220,
+       "max": 220,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    },
+    {
+     "part": 649418999,
+     "pinned": false,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 0,
+       "max": 90,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      },
+      "Oxidizer": {
+       "amount": 0,
+       "max": 110,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "step": "2-switched",
+   "windows": [
+    {
+     "part": 1223746542,
+     "pinned": true,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 180,
+       "max": 180,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      },
+      "Oxidizer": {
+       "amount": 220,
+       "max": 220
+      }
+     }
+    },
+    {
+     "part": 649418999,
+     "pinned": false,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 0,
+       "max": 200,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "step": "3-five-seconds-later",
+   "windows": [
+    {
+     "part": 1223746542,
+     "pinned": true,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 129.8,
+       "max": 180,
+       "buttons": [
+        "stop"
+       ]
+      },
+      "Oxidizer": {
+       "amount": 220,
+       "max": 220
+      }
+     }
+    },
+    {
+     "part": 649418999,
+     "pinned": false,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 50.2,
+       "max": 200,
+       "buttons": [
+        "stop"
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "step": "4-end",
+   "windows": [
+    {
+     "part": 1223746542,
+     "pinned": true,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 0,
+       "max": 180,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      },
+      "Oxidizer": {
+       "amount": 220,
+       "max": 220
+      }
+     }
+    },
+    {
+     "part": 649418999,
+     "pinned": false,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 180.0,
+       "max": 200,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

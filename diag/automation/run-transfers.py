@@ -1,5 +1,5 @@
 """Plays the protocols of Resource Transfer Fix: filling a tank, a tank of liquid fuel only, one tank to
-several, several tanks to one, other resources, crossfeed, docking.
+several, several tanks to one, other resources, crossfeed, docking, a tank's contents switched in flight.
 
 It drives KSP through KSP-Util-MCPServer, a mod that answers HTTP requests on 127.0.0.1, and needs nothing but
 Python 3: no AI, no package to install. Start KSP with KSP-Util-MCPServer installed, copy transfer-kerbin.sfs and
@@ -48,6 +48,13 @@ windows of the tanker's front FL-T200 and of the ship's front FL-T200 are then o
 liquid fuel of the ship's, and the script waits until it is full, then five seconds more. Here the windows
 leave the middle of the screen to the rovers: the part action windows side by side at the top left, the one
 of KSP Diag - Resource Transfer to the right.
+
+A tank's contents switched in flight (transfer-kerbin.sfs, in a game with B9PartSwitch and the test patch
+of in-flight-switch/ResourceTransferB9Test installed, which gives the FL-T200 a B9PartSwitch switch that
+works in flight, between liquid fuel and oxidizer and liquid fuel only): the tanker's window is opened and
+pinned, then the FL-T200's; the FL-T200 is switched to liquid fuel only, by calling what the button of
+B9PartSwitch's in-flight dialog calls; In is pressed for its liquid fuel, the script waits five seconds,
+then until the tanker runs dry, thirty seconds at most. "all" leaves this protocol out.
 
 Each protocol loads its save first. The windows are dragged apart, the pinned ones to the left, one under the
 other, and the last one to the right, and a screenshot is taken at every step. The script prints what the windows show and writes it to
@@ -369,9 +376,33 @@ def docking(options, out):
     return finish(record)
 
 
+def in_flight_switch(options, out):
+    record = []
+    ids = start(options)
+    tanker, tank = ids["fuelTank"], ids["fuelTankSmall"]
+    open_at(tanker, LEFT, pin=True)
+    open_at(tank, RIGHT)
+    step(record, out, "1-before")
+    # What the button of B9PartSwitch's in-flight dialog calls (PartSwitchFlightDialog).
+    call("call_method", type="B9PartSwitch.ModuleB9PartSwitch", method="SwitchSubtype", arguments=["LiquidFuel"],
+         match="part.persistentId=%d" % tank)
+    time.sleep(1)
+    step(record, out, "2-switched")
+    call("press_part_button", part=tank, resource="LiquidFuel", transfer="in")
+    time.sleep(5)
+    step(record, out, "3-five-seconds-later")
+    # The tanker holds less liquid fuel than the switched tank takes: it runs dry first, when anything flows.
+    wait_for(tanker, "LiquidFuel", lambda value, capacity: value <= 0, seconds=30)
+    time.sleep(2)
+    step(record, out, "4-end")
+    return finish(record)
+
+
 PROTOCOLS = {"filling": filling, "fuel-only": fuel_only, "one-to-several": one_to_several,
              "several-to-one": several_to_one, "other-resources": other_resources, "crossfeed": crossfeed,
-             "docking": docking}
+             "docking": docking, "in-flight-switch": in_flight_switch}
+# The protocols "all" plays: those that need no other mod than KSP Diag - Resource Transfer.
+STOCK_PROTOCOLS = [name for name in PROTOCOLS if name != "in-flight-switch"]
 
 
 def main():
@@ -387,7 +418,7 @@ def main():
     DIAG = "resourcetransfer_read" in tool_names()
     log("KSP Diag - Resource Transfer", "installed" if DIAG else "not installed")
 
-    names = list(PROTOCOLS) if options.protocol == "all" else [options.protocol]
+    names = STOCK_PROTOCOLS if options.protocol == "all" else [options.protocol]
     runs = {}
     for name in names:
         out = os.path.join(options.out, name)

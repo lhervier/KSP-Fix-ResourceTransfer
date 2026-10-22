@@ -80,8 +80,8 @@ any of them; removing the mod gives the stock behaviour back at once.
   shown controls it is paired with does the other half: a tank that sends stops when no tank takes from
   it, a tank that takes stops when no tank sends to it.
 - **`linkAllTransfers`.** When stock pairs a new control, the mod first pairs it with every control of the
-  same resource, on another part, that an open window shows. Stock then runs as usual, and adds no pair
-  twice.
+  same resource, on another part, that an open window shows, and drops from their pairs the controls that
+  have been destroyed. Stock then runs as usual, and adds no pair twice.
 
 **→ Full chapter: [The fix](docs/the-fix.md)**
 
@@ -133,19 +133,26 @@ once the ship's tank is full; with this mod, it stops with it.
 
 **→ Full chapter: [Checking vessels docked in flight](docs/checking-docking.md)**
 
+## Checked: a tank's contents switched in flight
+
+With the windows of a tanker and of an empty FL-T200 open, the FL-T200 is switched in flight with
+B9PartSwitch to liquid fuel only, and In is pressed for its liquid fuel. On stock, the switch leaves the
+transfer controls of both windows unpaired, and nothing moves; with this mod, they come back paired, and the
+liquid fuel moves until the tanker is out of it.
+
+**→ Full chapter: [Checking a tank's contents switched in flight](docs/checking-in-flight-switch.md)**
+
 ## Work in progress
 
 Both patches act on every resource transfer of every part action window. Each point below is a place
 where this mod changes what stock does, and so where it could break something. What you would see, and how
 to check it by hand:
 
-- **Switching a tank's contents in flight.** B9PartSwitch can change what a tank holds in flight; it then
-  empties that tank's part action window and has it built again (`UIPartActionWindow.ClearList`,
-  `displayDirty`), alone, after the other windows. Its new transfer controls are then created the way the
-  oxidizer controls of [Checked: a tank of liquid fuel only](#checked-a-tank-of-liquid-fuel-only) are, and
-  stock should leave them unpaired, which this mod pairs. Read in its source, not played: with two tank
-  windows open, switch one tank's contents in flight, and press In or Out on it, without this mod and with
-  it. RealFuels (the tanks of RP-1) has a tank's window built again the same way when its tanks change.
+- **RealFuels' tanks changed in flight.** RealFuels (the tanks of RP-1) has a tank's part action window
+  built again when its tanks change, as B9PartSwitch does in
+  [Checked: a tank's contents switched in flight](#checked-a-tanks-contents-switched-in-flight). Read in its
+  source, not played: with two tank windows open, change one tank's contents in flight, and press In or Out
+  on it, without this mod and with it.
 - **Mods that change part action windows, or move resources their own way.** A mod that adds, removes or
   rebuilds the items of a part action window could pair controls in its own way. None was tried. Kerbal
   Attachment System moves resources between two vessels linked by its pipe in a window of its own

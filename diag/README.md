@@ -10,7 +10,9 @@ Described in [Checking the culprit: filling a tank](../docs/checking-the-culprit
 [Checking several tanks](../docs/checking-several-tanks.md), on one rocket, and
 [Checking other resources](../docs/checking-other-resources.md) and
 [Checking transfers that obey crossfeed](../docs/checking-crossfeed.md), on another, and
-[Checking vessels docked in flight](../docs/checking-docking.md), on two rovers. One script plays them all.
+[Checking vessels docked in flight](../docs/checking-docking.md), on two rovers, and
+[Checking a tank's contents switched in flight](../docs/checking-in-flight-switch.md), on the first rocket
+with B9PartSwitch. One script plays them all.
 
 - [transfer-kerbin.sfs](transfer-kerbin.sfs): the save of every protocol but *several tanks to one*, and
   [transfer-kerbin-two-full.sfs](transfer-kerbin-two-full.sfs), the same with the fuselage full, for that
@@ -20,6 +22,8 @@ Described in [Checking the culprit: filling a tank](../docs/checking-the-culprit
   whose transfers obey crossfeed, for *crossfeed*.
 - [transfer-docking-kerbin.sfs](transfer-docking-kerbin.sfs): the save of *docking*, two rovers docked on
   the runway.
+- [in-flight-switch/ResourceTransferB9Test/](in-flight-switch/ResourceTransferB9Test/): the test patch
+  for ModuleManager that *in-flight switch* needs, with B9PartSwitch, to copy into `GameData` as it is.
 - [automation/run-transfers.py](automation/run-transfers.py): the script that plays them through
   [KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer). Python 3 only, nothing to install.
 - `stock/` and `fix/`: for each series, on stock and with this mod, `runs.json` (what the script printed)
@@ -30,8 +34,9 @@ Described in [Checking the culprit: filling a tank](../docs/checking-the-culprit
   [../imgs/checking-the-culprit-fuel-only/](../imgs/checking-the-culprit-fuel-only/) and
   [../imgs/checking-several-tanks/](../imgs/checking-several-tanks/).
 - `other-resources/stock/` and `other-resources/fix/`, `crossfeed/stock/` and `crossfeed/fix/`,
-  `docking/stock/` and `docking/fix/`: the same for *other resources*, *crossfeed* and *docking*, each
-  played in sessions of its own; their screenshots are in
-  [../imgs/checking-other-resources/](../imgs/checking-other-resources/),
-  [../imgs/checking-crossfeed/](../imgs/checking-crossfeed/) and
-  [../imgs/checking-docking/](../imgs/checking-docking/).
+  `docking/stock/` and `docking/fix/`, `in-flight-switch/stock/` and `in-flight-switch/fix/`: the same for
+  *other resources*, *crossfeed*, *docking* and *in-flight switch*, each played in sessions of its own;
+  their screenshots are in [../imgs/checking-other-resources/](../imgs/checking-other-resources/),
+  [../imgs/checking-crossfeed/](../imgs/checking-crossfeed/),
+  [../imgs/checking-docking/](../imgs/checking-docking/) and
+  [../imgs/checking-in-flight-switch/](../imgs/checking-in-flight-switch/).
