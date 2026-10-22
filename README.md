@@ -136,9 +136,13 @@ to check it by hand:
   into one the same way, but that was not played. Dock a tanker to a ship and move fuel, oxidizer and
   monopropellant between them, and look for buttons that do nothing or a Stop that stays.
 - **Mods that change part action windows, or move resources their own way.** A mod that adds, removes or
-  rebuilds the items of a part action window could pair controls in its own way, and a mod with a transfer
-  window of its own, such as Kerbal Attachment System for the pipes it lays between vessels, may not go
-  through these controls at all. None was tried.
+  rebuilds the items of a part action window could pair controls in its own way. None was tried. Kerbal
+  Attachment System moves resources between two vessels linked by its pipe in a window of its own
+  (`KASLinkResourceConnector`), without the transfer controls of the part action windows: this mod leaves
+  it alone. Once the pipe docks the two vessels into one, that window sends the player to the stock
+  transfer, the one this mod fixes. That is read in its source, not played: link two vessels with a KAS
+  pipe, move fuel through its window, dock them through the pipe, and move fuel with the part action
+  windows, without this mod and with it.
 
 ## Install
 
