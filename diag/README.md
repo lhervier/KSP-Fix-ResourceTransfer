@@ -9,8 +9,8 @@ Described in [Checking the culprit: filling a tank](../docs/checking-the-culprit
 [Checking the culprit: a tank of liquid fuel only](../docs/checking-the-culprit-fuel-only.md) and
 [Checking several tanks](../docs/checking-several-tanks.md), on one rocket, and
 [Checking other resources](../docs/checking-other-resources.md) and
-[Checking transfers that obey crossfeed](../docs/checking-crossfeed.md), on another. One script plays them
-all.
+[Checking transfers that obey crossfeed](../docs/checking-crossfeed.md), on another, and
+[Checking vessels docked in flight](../docs/checking-docking.md), on two rovers. One script plays them all.
 
 - [transfer-kerbin.sfs](transfer-kerbin.sfs): the save of every protocol but *several tanks to one*, and
   [transfer-kerbin-two-full.sfs](transfer-kerbin-two-full.sfs), the same with the fuselage full, for that
@@ -18,6 +18,8 @@ all.
 - [transfer-resources-kerbin.sfs](transfer-resources-kerbin.sfs): the save of *other resources*, with its
   own rocket, and [transfer-crossfeed-kerbin.sfs](transfer-crossfeed-kerbin.sfs), the same rocket in a game
   whose transfers obey crossfeed, for *crossfeed*.
+- [transfer-docking-kerbin.sfs](transfer-docking-kerbin.sfs): the save of *docking*, two rovers docked on
+  the runway.
 - [automation/run-transfers.py](automation/run-transfers.py): the script that plays them through
   [KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer). Python 3 only, nothing to install.
 - `stock/` and `fix/`: for each series, on stock and with this mod, `runs.json` (what the script printed)
@@ -27,7 +29,9 @@ all.
   [../imgs/checking-the-culprit-filling/](../imgs/checking-the-culprit-filling/),
   [../imgs/checking-the-culprit-fuel-only/](../imgs/checking-the-culprit-fuel-only/) and
   [../imgs/checking-several-tanks/](../imgs/checking-several-tanks/).
-- `other-resources/stock/` and `other-resources/fix/`, `crossfeed/stock/` and `crossfeed/fix/`: the same for
-  *other resources* and *crossfeed*, each played in sessions of its own; their screenshots are in
-  [../imgs/checking-other-resources/](../imgs/checking-other-resources/) and
-  [../imgs/checking-crossfeed/](../imgs/checking-crossfeed/).
+- `other-resources/stock/` and `other-resources/fix/`, `crossfeed/stock/` and `crossfeed/fix/`,
+  `docking/stock/` and `docking/fix/`: the same for *other resources*, *crossfeed* and *docking*, each
+  played in sessions of its own; their screenshots are in
+  [../imgs/checking-other-resources/](../imgs/checking-other-resources/),
+  [../imgs/checking-crossfeed/](../imgs/checking-crossfeed/) and
+  [../imgs/checking-docking/](../imgs/checking-docking/).

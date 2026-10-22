@@ -1,5 +1,5 @@
 """Plays the protocols of Resource Transfer Fix: filling a tank, a tank of liquid fuel only, one tank to
-several, several tanks to one, other resources, crossfeed.
+several, several tanks to one, other resources, crossfeed, docking.
 
 It drives KSP through KSP-Util-MCPServer, a mod that answers HTTP requests on 127.0.0.1, and needs nothing but
 Python 3: no AI, no package to install. Start KSP with KSP-Util-MCPServer installed, copy transfer-kerbin.sfs and
@@ -40,6 +40,15 @@ Enable Crossfeed; In is pressed for the liquid fuel of the FL-T200, and the scri
 then five seconds more. The buttons are pressed by the names of their events, the same in every language
 of the game.
 
+Docking (transfer-docking-kerbin.sfs: two small rovers on the runway, joined nose to nose by their docking
+ports; the first, the tanker, with its two FL-T200 full, the second, the ship, with its front FL-T200 half
+full of liquid fuel and the rest empty): the ports
+are undocked, the tanker backs away three metres, then drives back at 0.2 m/s until the ports dock. The
+windows of the tanker's front FL-T200 and of the ship's front FL-T200 are then opened, In is pressed for the
+liquid fuel of the ship's, and the script waits until it is full, then five seconds more. Here the windows
+leave the middle of the screen to the rovers: the part action windows side by side at the top left, the one
+of KSP Diag - Resource Transfer to the right.
+
 Each protocol loads its save first. The windows are dragged apart, the pinned ones to the left, one under the
 other, and the last one to the right, and a screenshot is taken at every step. The script prints what the windows show and writes it to
 runs.json. KSP is left running at the end.
@@ -61,6 +70,9 @@ LEFT = (40, 120)
 LEFT_BELOW = (40, 330)
 RIGHT = (980, 120)
 DIAG_WINDOW = (440, 100)
+# Docking: the windows leave the middle of the screen to the rovers.
+LEFT_BESIDE = (310, 120)
+DOCKING_DIAG_WINDOW = (830, 100)
 
 # Whether KSP Diag - Resource Transfer is installed: its tools are then offered by the server.
 DIAG = False
@@ -311,8 +323,55 @@ def crossfeed(options, out):
     return finish(record)
 
 
+def loaded_vessels(prefix):
+    """The loaded vessels whose name starts with prefix."""
+    return [v for v in call("list_vessels") if v["loaded"] and v["name"].startswith(prefix)]
+
+
+def docking(options, out):
+    record = []
+    start(options, "transfer-docking-kerbin")
+    state = call("get_state")
+    name, heading = state["vessel"]["name"], state["vessel"]["heading"]
+    # The rovers show in the middle of the screen, seen from their left side: the windows go around them,
+    # KSP Diag - Resource Transfer's to the right, the part action windows side by side at the top.
+    frame = lambda: call("set_camera", distance=16, heading=(heading + 90) % 360, pitch=15, aim_heading=0,
+                         aim_pitch=0)
+    frame()
+    if DIAG:
+        call("resourcetransfer_move_window", x=DOCKING_DIAG_WINDOW[0], y=DOCKING_DIAG_WINDOW[1])
+    parts = call("list_parts")
+    named = lambda n: [p for p in parts if p["name"] == n]
+    # The tanker is the first rover of the list (its port is the vessel's root), the ship the second.
+    port = named("dockingPort2")[0]["id"]
+    tanker, ship = named("fuelTankSmall")[0]["id"], named("fuelTankSmall")[2]["id"]
+    open_at(port, LEFT)
+    call("press_part_button", part=port, button="Undock")
+    call("part_menu", action="close")
+    time.sleep(2)
+    if len(loaded_vessels(name)) != 2:
+        raise RuntimeError("the ports did not undock")
+    call("drive", heading=heading, reverse=True, speed=0.5, distance=3)
+    step(record, out, "1-undocked")
+    call("drive", heading=heading, speed=0.2, distance=3.6)
+    time.sleep(2)
+    if len(loaded_vessels(name)) != 1:
+        raise RuntimeError("the ports did not dock again")
+    # Docking makes a new vessel, and the camera goes back to its default framing.
+    frame()
+    open_at(tanker, LEFT, pin=True)
+    open_at(ship, LEFT_BESIDE)
+    step(record, out, "2-docked-again")
+    call("press_part_button", part=ship, resource="LiquidFuel", transfer="in")
+    wait_for(ship, "LiquidFuel", lambda value, capacity: value >= capacity)
+    time.sleep(5)
+    step(record, out, "3-tank-full")
+    return finish(record)
+
+
 PROTOCOLS = {"filling": filling, "fuel-only": fuel_only, "one-to-several": one_to_several,
-             "several-to-one": several_to_one, "other-resources": other_resources, "crossfeed": crossfeed}
+             "several-to-one": several_to_one, "other-resources": other_resources, "crossfeed": crossfeed,
+             "docking": docking}
 
 
 def main():

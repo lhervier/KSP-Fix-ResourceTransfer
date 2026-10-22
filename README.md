@@ -125,16 +125,20 @@ back paired and work; with this mod, the tanker also stops once the ship's tank 
 
 **→ Full chapter: [Checking transfers that obey crossfeed](docs/checking-crossfeed.md)**
 
+## Checked: vessels docked in flight
+
+Two rovers are undocked, then driven back into each other until their Clamp-O-Tron Docking Ports dock, and
+liquid fuel is moved from one to the other. On stock, the transfer runs, and the tanker keeps showing Stop
+once the ship's tank is full; with this mod, it stops with it.
+
+**→ Full chapter: [Checking vessels docked in flight](docs/checking-docking.md)**
+
 ## Work in progress
 
 Both patches act on every resource transfer of every part action window. Each point below is a place
 where this mod changes what stock does, and so where it could break something. What you would see, and how
 to check it by hand:
 
-- **Vessels docked in flight.** Transfers across two Clamp-O-Tron Docking Ports joined in the editor are checked
-  (see [Checked: other resources](#checked-other-resources)); ports that dock in flight join two vessels
-  into one the same way, but that was not played. Dock a tanker to a ship and move fuel, oxidizer and
-  monopropellant between them, and look for buttons that do nothing or a Stop that stays.
 - **Switching a tank's contents in flight.** B9PartSwitch can change what a tank holds in flight; it then
   empties that tank's part action window and has it built again (`UIPartActionWindow.ClearList`,
   `displayDirty`), alone, after the other windows. Its new transfer controls are then created the way the
