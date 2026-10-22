@@ -109,23 +109,36 @@ when the transfer ends, and the amounts moved are the same.
 
 **→ Full chapter: [Checking several tanks](docs/checking-several-tanks.md)**
 
+## Checked: other resources
+
+Liquid fuel, monopropellant, xenon and ore, each moved from a tanker to a ship across two Clamp-O-Tron
+Docking Ports joined in the editor. On stock, every resource moves, and every time the tanker keeps showing Stop once the
+ship's tank is full; with this mod, the tanker stops with it, and the amounts moved are the same.
+
+**→ Full chapter: [Checking other resources](docs/checking-other-resources.md)**
+
+## Checked: transfers that obey crossfeed
+
+In a game where transfers obey crossfeed, the crossfeed of a docking port between a tanker and a ship is
+closed, then opened again. On stock as with this mod, the transfer buttons leave both windows, then come
+back paired and work; with this mod, the tanker also stops once the ship's tank is full.
+
+**→ Full chapter: [Checking transfers that obey crossfeed](docs/checking-crossfeed.md)**
+
 ## Work in progress
 
 Both patches act on every resource transfer of every part action window. Each point below is a place
 where this mod changes what stock does, and so where it could break something. What you would see, and how
 to check it by hand:
 
-- **Docked vessels.** Refuelling across a docking port is what the mod is for, and its patches see the
-  docked vessels as one. Dock a tanker to a ship and move fuel, oxidizer and monopropellant between them,
-  and look for buttons that do nothing or a Stop that stays.
-- **Transfers that obey crossfeed.** With the advanced difficulty setting that makes transfers obey
-  crossfeed (on in Moderate and Hard), the transfer buttons leave every window when one open part cannot
-  be reached. Close the crossfeed of a docking port between two open tanks, then open it again, and check
-  that the buttons come back and work.
-- **Other resources.** Monopropellant, xenon and ore go through the same controls. Move each between two
-  tanks, and check that the transfer starts and stops as with fuel.
-- **Mods that change part action windows.** A mod that adds, removes or rebuilds the items of a part action
-  window could pair controls in its own way. None was tried.
+- **Vessels docked in flight.** Transfers across two Clamp-O-Tron Docking Ports joined in the editor are checked
+  (see [Checked: other resources](#checked-other-resources)); ports that dock in flight join two vessels
+  into one the same way, but that was not played. Dock a tanker to a ship and move fuel, oxidizer and
+  monopropellant between them, and look for buttons that do nothing or a Stop that stays.
+- **Mods that change part action windows, or move resources their own way.** A mod that adds, removes or
+  rebuilds the items of a part action window could pair controls in its own way, and a mod with a transfer
+  window of its own, such as Kerbal Attachment System for the pipes it lays between vessels, may not go
+  through these controls at all. None was tried.
 
 ## Install
 

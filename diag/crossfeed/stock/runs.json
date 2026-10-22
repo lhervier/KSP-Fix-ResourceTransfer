@@ -1,0 +1,183 @@
+{
+ "crossfeed": [
+  {
+   "step": "1-crossfeed-on",
+   "windows": [
+    {
+     "part": 1000009,
+     "pinned": true,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 180,
+       "max": 180,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      },
+      "Oxidizer": {
+       "amount": 220,
+       "max": 220,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    },
+    {
+     "part": 1000001,
+     "pinned": true,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 0,
+       "max": 90,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      },
+      "Oxidizer": {
+       "amount": 0,
+       "max": 110,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "step": "2-crossfeed-off",
+   "windows": [
+    {
+     "part": 1000009,
+     "pinned": true,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 180,
+       "max": 180
+      },
+      "Oxidizer": {
+       "amount": 220,
+       "max": 220
+      }
+     }
+    },
+    {
+     "part": 1000001,
+     "pinned": true,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 0,
+       "max": 90
+      },
+      "Oxidizer": {
+       "amount": 0,
+       "max": 110
+      }
+     }
+    }
+   ]
+  },
+  {
+   "step": "3-crossfeed-on-again",
+   "windows": [
+    {
+     "part": 1000009,
+     "pinned": true,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 180,
+       "max": 180,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      },
+      "Oxidizer": {
+       "amount": 220,
+       "max": 220,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    },
+    {
+     "part": 1000001,
+     "pinned": true,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 0,
+       "max": 90,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      },
+      "Oxidizer": {
+       "amount": 0,
+       "max": 110,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "step": "4-tank-full",
+   "windows": [
+    {
+     "part": 1000009,
+     "pinned": true,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 90.0,
+       "max": 180,
+       "buttons": [
+        "stop"
+       ]
+      },
+      "Oxidizer": {
+       "amount": 220,
+       "max": 220,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    },
+    {
+     "part": 1000001,
+     "pinned": true,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 90,
+       "max": 90,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      },
+      "Oxidizer": {
+       "amount": 0,
+       "max": 110,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

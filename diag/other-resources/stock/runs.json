@@ -1,0 +1,152 @@
+{
+ "other-resources": [
+  {
+   "step": "1-LiquidFuel",
+   "windows": [
+    {
+     "part": 1000009,
+     "pinned": true,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 90.0,
+       "max": 180,
+       "buttons": [
+        "stop"
+       ]
+      },
+      "Oxidizer": {
+       "amount": 220,
+       "max": 220,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    },
+    {
+     "part": 1000001,
+     "pinned": false,
+     "resources": {
+      "LiquidFuel": {
+       "amount": 90,
+       "max": 90,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      },
+      "Oxidizer": {
+       "amount": 0,
+       "max": 110,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "step": "2-MonoPropellant",
+   "windows": [
+    {
+     "part": 1000006,
+     "pinned": true,
+     "resources": {
+      "MonoPropellant": {
+       "amount": 110.0,
+       "max": 120,
+       "buttons": [
+        "stop"
+       ]
+      }
+     }
+    },
+    {
+     "part": 1000000,
+     "pinned": false,
+     "resources": {
+      "ElectricCharge": {
+       "amount": 50,
+       "max": 50
+      },
+      "MonoPropellant": {
+       "amount": 10,
+       "max": 10,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "step": "3-XenonGas",
+   "windows": [
+    {
+     "part": 1000007,
+     "pinned": true,
+     "resources": {
+      "XenonGas": {
+       "amount": 360.0,
+       "max": 720,
+       "buttons": [
+        "stop"
+       ]
+      }
+     }
+    },
+    {
+     "part": 1000002,
+     "pinned": false,
+     "resources": {
+      "XenonGas": {
+       "amount": 720,
+       "max": 720,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "step": "4-Ore",
+   "windows": [
+    {
+     "part": 1000008,
+     "pinned": true,
+     "resources": {
+      "Ore": {
+       "amount": 150,
+       "max": 300,
+       "buttons": [
+        "stop"
+       ]
+      }
+     }
+    },
+    {
+     "part": 1000003,
+     "pinned": false,
+     "resources": {
+      "Ore": {
+       "amount": 300,
+       "max": 300,
+       "buttons": [
+        "in",
+        "out"
+       ]
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

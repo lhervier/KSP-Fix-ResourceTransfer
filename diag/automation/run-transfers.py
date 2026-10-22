@@ -1,5 +1,5 @@
 """Plays the protocols of Resource Transfer Fix: filling a tank, a tank of liquid fuel only, one tank to
-several, several tanks to one.
+several, several tanks to one, other resources, crossfeed.
 
 It drives KSP through KSP-Util-MCPServer, a mod that answers HTTP requests on 127.0.0.1, and needs nothing but
 Python 3: no AI, no package to install. Start KSP with KSP-Util-MCPServer installed, copy transfer-kerbin.sfs and
@@ -25,6 +25,20 @@ seconds more.
 Several tanks to one (transfer-kerbin-two-full.sfs): the tanker's window and the fuselage's are opened and
 pinned, then the FL-T200's; In is pressed for the liquid fuel of the FL-T200, and the script waits until it
 is full, then ten seconds more.
+
+Other resources (transfer-resources-kerbin.sfs, its own rocket): the "ship" above two docking ports holds
+a Mk1 pod with no monopropellant, an empty FL-T200, a PB-X150 half full of xenon and a Small Holding Tank
+half full of ore; the "tanker" below the ports, an FL-R120, a PB-X150, a Small Holding Tank and an FL-T400,
+all full. For each resource in turn, liquid fuel, monopropellant, xenon and ore: the tanker's tank's window
+is opened and pinned, then the ship's tank's; In is pressed for the resource in the ship's tank, the script
+waits until it is full, then five seconds more, and the windows are closed.
+
+Crossfeed (transfer-crossfeed-kerbin.sfs: the rocket of other resources, in a game whose transfers obey
+crossfeed): the windows of the tanker's FL-T400 and of the ship's FL-T200 are opened and pinned; the window
+of the tanker's docking port is opened, Disable Crossfeed pressed, and the window closed; then the same with
+Enable Crossfeed; In is pressed for the liquid fuel of the FL-T200, and the script waits until it is full,
+then five seconds more. The buttons are pressed by the names of their events, the same in every language
+of the game.
 
 Each protocol loads its save first. The windows are dragged apart, the pinned ones to the left, one under the
 other, and the last one to the right, and a screenshot is taken at every step. The script prints what the windows show and writes it to
@@ -239,8 +253,66 @@ def several_to_one(options, out):
     return finish(record)
 
 
+# Other resources: (resource, the ship's tank, the tanker's tank), by part name.
+RESOURCES = [
+    ("LiquidFuel", "fuelTankSmall", "fuelTank"),
+    ("MonoPropellant", "mk1pod.v2", "RCSFuelTank"),
+    ("XenonGas", "xenonTank", "xenonTank"),
+    ("Ore", "SmallTank", "SmallTank"),
+]
+
+
+def other_resources(options, out):
+    record = []
+    start(options, "transfer-resources-kerbin")
+    # A taller rocket than the other protocols': the camera stands further back.
+    call("set_camera", distance=22)
+    parts = call("list_parts")
+    for i, (resource, ship_name, tanker_name) in enumerate(RESOURCES):
+        # The ship's tanks are above the docking ports, the tanker's below: the first and the last part of
+        # that name in the vessel's list, which goes from the pod down.
+        named = lambda name: [p for p in parts if p["name"] == name]
+        ship, tanker = named(ship_name)[0]["id"], named(tanker_name)[-1]["id"]
+        open_at(tanker, LEFT, pin=True)
+        open_at(ship, RIGHT)
+        call("press_part_button", part=ship, resource=resource, transfer="in")
+        wait_for(ship, resource, lambda value, capacity: value >= capacity)
+        time.sleep(5)
+        step(record, out, "%d-%s" % (i + 1, resource))
+        # Closes both windows: the tanker's is pinned, so it is unpinned first.
+        call("part_menu", action="unpin", part=tanker)
+        call("part_menu", action="close")
+    return finish(record)
+
+
+def crossfeed(options, out):
+    record = []
+    start(options, "transfer-crossfeed-kerbin")
+    call("set_camera", distance=22)
+    parts = call("list_parts")
+    named = lambda name: [p for p in parts if p["name"] == name]
+    tanker, ship = named("fuelTank")[-1]["id"], named("fuelTankSmall")[0]["id"]
+    # The tanker's docking port: the lower of the two.
+    port = named("dockingPort2")[-1]["id"]
+    open_at(tanker, LEFT, pin=True)
+    open_at(ship, RIGHT, pin=True)
+    step(record, out, "1-crossfeed-on")
+    for event, name in (("DisableXFeed", "2-crossfeed-off"), ("EnableXFeed", "3-crossfeed-on-again")):
+        open_at(port, LEFT_BELOW)
+        call("press_part_button", part=port, button=event)
+        # A right click on empty space: the port's window, the only one not pinned, closes.
+        call("part_menu", action="close")
+        time.sleep(1)
+        step(record, out, name)
+    call("press_part_button", part=ship, resource="LiquidFuel", transfer="in")
+    wait_for(ship, "LiquidFuel", lambda value, capacity: value >= capacity)
+    time.sleep(5)
+    step(record, out, "4-tank-full")
+    return finish(record)
+
+
 PROTOCOLS = {"filling": filling, "fuel-only": fuel_only, "one-to-several": one_to_several,
-             "several-to-one": several_to_one}
+             "several-to-one": several_to_one, "other-resources": other_resources, "crossfeed": crossfeed}
 
 
 def main():
