@@ -119,22 +119,22 @@ Its *Log*, pressed at the end of the protocol, writes its journal to `KSP.log`. 
 nothing that lasts to the end of a frame:
 
 ```
-[KSPDiagResourceTransfer] #58571 window C (Réservoir FL-T200) opened
-[KSPDiagResourceTransfer] #58571 window B (Fuselage à ergol liquide Mk1) closed
-[KSPDiagResourceTransfer] #58571 A Oxidizer: created, → —
-[KSPDiagResourceTransfer] #58571 C Oxidizer: created, → —
+[KSPDiagResourceTransfer] #46303 window C (Réservoir FL-T200) opened
+[KSPDiagResourceTransfer] #46303 window B (Fuselage à ergol liquide Mk1) closed
+[KSPDiagResourceTransfer] #46303 A Oxidizer: created, → —
+[KSPDiagResourceTransfer] #46303 C Oxidizer: created, → —
 ```
 
 With this mod ([`KSP.log`](../diag/fix/KSP.log)), each is created paired with the other, and In sets them
 sending and taking:
 
 ```
-[KSPDiagResourceTransfer] #33741 window C (Réservoir FL-T200) opened
-[KSPDiagResourceTransfer] #33741 window B (Fuselage à ergol liquide Mk1) closed
-[KSPDiagResourceTransfer] #33741 A Oxidizer: created, → C
-[KSPDiagResourceTransfer] #33741 C Oxidizer: created, → A
-[KSPDiagResourceTransfer] #33747 A Oxidizer: None → Out
-[KSPDiagResourceTransfer] #33747 C Oxidizer: None → In
+[KSPDiagResourceTransfer] #46267 window C (Réservoir FL-T200) opened
+[KSPDiagResourceTransfer] #46267 window B (Fuselage à ergol liquide Mk1) closed
+[KSPDiagResourceTransfer] #46267 A Oxidizer: created, → C
+[KSPDiagResourceTransfer] #46267 C Oxidizer: created, → A
+[KSPDiagResourceTransfer] #46275 A Oxidizer: None → Out
+[KSPDiagResourceTransfer] #46275 C Oxidizer: None → In
 ```
 
 ## What the measurements say

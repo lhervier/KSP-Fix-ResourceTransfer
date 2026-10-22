@@ -56,7 +56,9 @@ empty — which never comes, since no tank takes from it any more — or until S
 **A tank that takes keeps going while any target is busy.** The `In` half stops when its tank is full, or
 when no shown target is in a state other than `None`: a target that takes too counts as much as one that
 sends. Filled from a third tank, two tanks keep each other going once the third is empty and has stopped:
-each sees the other in `In`, and both show Stop, although nothing reaches them.
+each sees the other in `In`, and both show Stop, although nothing reaches them. Both cases are played in
+[Checking the culprit: filling a tank](checking-the-culprit-filling.md) and
+[Checking several tanks](checking-several-tanks.md).
 
 Pressing Stop on any tank of the transfer puts it and its targets back in `None`, and In and Out work again.
 

@@ -51,7 +51,7 @@ Diag on that row (the FL-T400's window is A, the FL-T200's B):
 | Step | FL-T400 | its buttons | its badge | FL-T200 | its buttons | its badge |
 |---|---|---|---|---|---|---|
 | Before In | 180 / 180 | In, Out | → B | 0 / 90 | In, Out | → A |
-| One second after In | 175 / 180 | Stop | → B · Out | 4.68 / 90 | Stop | → A · In |
+| One second after In | 175 / 180 | Stop | → B · Out | 4.59 / 90 | Stop | → A · In |
 | FL-T200 full | 90 / 180 | **Stop** | **→ B · Out** | 90 / 90 | In, Out | → A |
 | Ten seconds later | 90 / 180 | **Stop** | **→ B · Out** | 90 / 90 | In, Out | → A |
 
@@ -88,7 +88,7 @@ Read off the screenshots below:
 | Step | FL-T400 | its buttons | its badge | FL-T200 | its buttons | its badge |
 |---|---|---|---|---|---|---|
 | Before In | 180 / 180 | In, Out | → B | 0 / 90 | In, Out | → A |
-| One second after In | 175 / 180 | Stop | → B · Out | 4.59 / 90 | Stop | → A · In |
+| One second after In | 175 / 180 | Stop | → B · Out | 4.68 / 90 | Stop | → A · In |
 | FL-T200 full | 90 / 180 | **In, Out** | **→ B** | 90 / 90 | In, Out | → A |
 | Ten seconds later | 90 / 180 | **In, Out** | **→ B** | 90 / 90 | In, Out | → A |
 
@@ -136,18 +136,18 @@ fuel transfer, on stock: the FL-T200's control (B) goes back to `None` when it i
 never does.
 
 ```
-[KSPDiagResourceTransfer] #52976 A LiquidFuel: None → Out
-[KSPDiagResourceTransfer] #52976 B LiquidFuel: None → In
-[KSPDiagResourceTransfer] #55753 B LiquidFuel: In → None
+[KSPDiagResourceTransfer] #39704 A LiquidFuel: None → Out
+[KSPDiagResourceTransfer] #39704 B LiquidFuel: None → In
+[KSPDiagResourceTransfer] #42884 B LiquidFuel: In → None
 ```
 
 With this mod, both go back to `None` on the same frame:
 
 ```
-[KSPDiagResourceTransfer] #28570 A LiquidFuel: None → Out
-[KSPDiagResourceTransfer] #28570 B LiquidFuel: None → In
-[KSPDiagResourceTransfer] #31056 A LiquidFuel: Out → None
-[KSPDiagResourceTransfer] #31056 B LiquidFuel: In → None
+[KSPDiagResourceTransfer] #39390 A LiquidFuel: None → Out
+[KSPDiagResourceTransfer] #39390 B LiquidFuel: None → In
+[KSPDiagResourceTransfer] #42721 A LiquidFuel: Out → None
+[KSPDiagResourceTransfer] #42721 B LiquidFuel: In → None
 ```
 
 ## What the measurements say

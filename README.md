@@ -101,18 +101,20 @@ with this mod, 27.61 units have, and the mod's log says it paired the tanker's o
 
 **→ Full chapter: [Checking the culprit: a tank of liquid fuel only](docs/checking-the-culprit-fuel-only.md)**
 
+## Checked: several tanks
+
+A full tank sends to two empty ones until it runs dry, then two full tanks send to an empty one until it is
+full. On stock, the tanks that did not run dry or fill up keep showing Stop; with this mod, every tank stops
+when the transfer ends, and the amounts moved are the same.
+
+**→ Full chapter: [Checking several tanks](docs/checking-several-tanks.md)**
+
 ## Work in progress
 
 Both patches act on every resource transfer of every part action window. Each point below is a place
 where this mod changes what stock does, and so where it could break something. What you would see, and how
 to check it by hand:
 
-- **One tank sending to several.** A transfer that stops before every tank it sends to is full, or keeps
-  going after, would be the stop patch going wrong. Pin the window of a full tank, open those of two empty
-  tanks, press Out on the full one, and watch every window until the transfer ends, without this mod and
-  with it.
-- **Several tanks sending to one.** The same, the other way: press In on an empty tank with two full ones
-  open, and watch for a tank left on Stop or a transfer that stops early.
 - **Docked vessels.** Refuelling across a docking port is what the mod is for, and its patches see the
   docked vessels as one. Dock a tanker to a ship and move fuel, oxidizer and monopropellant between them,
   and look for buttons that do nothing or a Stop that stays.

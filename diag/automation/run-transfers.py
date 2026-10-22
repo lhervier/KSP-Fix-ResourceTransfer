@@ -1,13 +1,15 @@
-"""Plays the protocols of Resource Transfer Fix: "Filling a tank" and "A tank of liquid fuel only".
+"""Plays the protocols of Resource Transfer Fix: filling a tank, a tank of liquid fuel only, one tank to
+several, several tanks to one.
 
 It drives KSP through KSP-Util-MCPServer, a mod that answers HTTP requests on 127.0.0.1, and needs nothing but
-Python 3: no AI, no package to install. Start KSP with KSP-Util-MCPServer installed, copy transfer-kerbin.sfs
-into a sandbox game, wait for the main menu, open that game, then run:
+Python 3: no AI, no package to install. Start KSP with KSP-Util-MCPServer installed, copy transfer-kerbin.sfs and
+transfer-kerbin-two-full.sfs into a sandbox game, wait for the main menu, open that game, then run:
 
     python run-transfers.py --folder <your sandbox game> --out out
 
-The save holds one rocket on the launch pad: an FL-T400 tank, full, plays the tanker; an FL-T200 tank and a
-Mk1 Liquid Fuel Fuselage, both empty, are the tanks to fill.
+transfer-kerbin.sfs holds one rocket on the launch pad: an FL-T400 tank, full, plays the tanker; an FL-T200
+tank and a Mk1 Liquid Fuel Fuselage, both empty, are the tanks to fill. transfer-kerbin-two-full.sfs is the
+same, with the fuselage full.
 
 Filling a tank: the tanker's part action window is opened and pinned, then the FL-T200's; In is pressed for
 the liquid fuel of the FL-T200, and the script waits until it is full, then ten seconds more.
@@ -16,8 +18,16 @@ A tank of liquid fuel only: the tanker's window is opened and pinned, then the f
 FL-T200's, which closes the fuselage's; In is pressed for the oxidizer of the FL-T200, and the script waits
 five seconds.
 
-Each protocol loads the save first. The windows are dragged apart, the tanker's to the left and the other one
-to the right, and a screenshot is taken at every step. The script prints what the windows show and writes it to
+One tank to several: the tanker's window and the FL-T200's are opened and pinned, then the fuselage's; Out
+is pressed for the liquid fuel of the tanker, and the script waits until the tanker is empty, then ten
+seconds more.
+
+Several tanks to one (transfer-kerbin-two-full.sfs): the tanker's window and the fuselage's are opened and
+pinned, then the FL-T200's; In is pressed for the liquid fuel of the FL-T200, and the script waits until it
+is full, then ten seconds more.
+
+Each protocol loads its save first. The windows are dragged apart, the pinned ones to the left, one under the
+other, and the last one to the right, and a screenshot is taken at every step. The script prints what the windows show and writes it to
 runs.json. KSP is left running at the end.
 
 With KSP Diag - Resource Transfer installed as well, its window is moved between the two part action windows,
@@ -34,6 +44,7 @@ URL = None
 
 # Where the windows are dragged, in pixels from the top left corner of the game's window (1280 x 720).
 LEFT = (40, 120)
+LEFT_BELOW = (40, 330)
 RIGHT = (980, 120)
 DIAG_WINDOW = (440, 100)
 
@@ -116,9 +127,19 @@ def amount(menus, part, resource):
     return None, None
 
 
-def start(options):
-    """Loads the save and frames the rocket. Returns the ids of its tanks."""
-    call("load_save", folder=options.folder, save=options.save)
+def start(options, save=None):
+    """Loads the save (the one of the options unless given) and frames the rocket. Returns the ids of its
+    tanks."""
+    # Right after the game opens, the server may not take the load yet: try again a few seconds later.
+    for attempt in range(3):
+        try:
+            call("load_save", folder=options.folder, save=save or options.save)
+            break
+        except Exception as e:
+            if attempt == 2:
+                raise
+            log("load_save failed, trying again:", e)
+            time.sleep(5)
     # Long enough for the crew portrait to show the kerbal rather than static.
     time.sleep(6)
     call("set_camera", distance=14, heading=20, pitch=5, fov=60)
@@ -135,6 +156,17 @@ def finish(record):
     return record
 
 
+def wait_for(part, resource, done, seconds=60):
+    """Waits until done(amount, capacity) holds for a resource of a part, as its window shows it, or for the
+    given number of seconds at most."""
+    deadline = time.time() + seconds
+    while time.time() < deadline:
+        value, capacity = amount(call("read_part_menus"), part, resource)
+        if value is not None and done(value, capacity):
+            return
+        time.sleep(0.5)
+
+
 def filling(options, out):
     record = []
     ids = start(options)
@@ -145,13 +177,7 @@ def filling(options, out):
     call("press_part_button", part=tank, resource="LiquidFuel", transfer="in")
     time.sleep(1)
     step(record, out, "2-filling")
-    deadline = time.time() + 60
-    while time.time() < deadline:
-        menus = call("read_part_menus")
-        fuel, capacity = amount(menus, tank, "LiquidFuel")
-        if fuel is not None and fuel >= capacity:
-            break
-        time.sleep(0.5)
+    wait_for(tank, "LiquidFuel", lambda value, capacity: value >= capacity)
     time.sleep(2)
     step(record, out, "3-tank-full")
     time.sleep(10)
@@ -175,7 +201,46 @@ def fuel_only(options, out):
     return finish(record)
 
 
-PROTOCOLS = {"filling": filling, "fuel-only": fuel_only}
+def one_to_several(options, out):
+    record = []
+    ids = start(options)
+    tanker, tank, fuselage = ids["fuelTank"], ids["fuelTankSmall"], ids["MK1Fuselage"]
+    open_at(tanker, LEFT, pin=True)
+    open_at(tank, LEFT_BELOW, pin=True)
+    open_at(fuselage, RIGHT)
+    step(record, out, "1-before")
+    call("press_part_button", part=tanker, resource="LiquidFuel", transfer="out")
+    time.sleep(1)
+    step(record, out, "2-sending")
+    wait_for(tanker, "LiquidFuel", lambda value, capacity: value <= 0)
+    time.sleep(2)
+    step(record, out, "3-tanker-empty")
+    time.sleep(10)
+    step(record, out, "4-ten-seconds-later")
+    return finish(record)
+
+
+def several_to_one(options, out):
+    record = []
+    ids = start(options, options.save + "-two-full")
+    tanker, tank, fuselage = ids["fuelTank"], ids["fuelTankSmall"], ids["MK1Fuselage"]
+    open_at(tanker, LEFT, pin=True)
+    open_at(fuselage, LEFT_BELOW, pin=True)
+    open_at(tank, RIGHT)
+    step(record, out, "1-before")
+    call("press_part_button", part=tank, resource="LiquidFuel", transfer="in")
+    time.sleep(1)
+    step(record, out, "2-taking")
+    wait_for(tank, "LiquidFuel", lambda value, capacity: value >= capacity)
+    time.sleep(2)
+    step(record, out, "3-tank-full")
+    time.sleep(10)
+    step(record, out, "4-ten-seconds-later")
+    return finish(record)
+
+
+PROTOCOLS = {"filling": filling, "fuel-only": fuel_only, "one-to-several": one_to_several,
+             "several-to-one": several_to_one}
 
 
 def main():
@@ -183,7 +248,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--folder", required=True, help="the sandbox game under saves/ the save was copied into")
     parser.add_argument("--save", default="transfer-kerbin", help="the save, without .sfs")
-    parser.add_argument("--protocol", choices=["filling", "fuel-only", "both"], default="both")
+    parser.add_argument("--protocol", choices=list(PROTOCOLS) + ["all"], default="all")
     parser.add_argument("--out", required=True, help="the folder for runs.json and the screenshots")
     parser.add_argument("--port", type=int, default=8770, help="the port of KSP-Util-MCPServer")
     options = parser.parse_args()
@@ -191,7 +256,7 @@ def main():
     DIAG = "resourcetransfer_read" in tool_names()
     log("KSP Diag - Resource Transfer", "installed" if DIAG else "not installed")
 
-    names = list(PROTOCOLS) if options.protocol == "both" else [options.protocol]
+    names = list(PROTOCOLS) if options.protocol == "all" else [options.protocol]
     runs = {}
     for name in names:
         out = os.path.join(options.out, name)
