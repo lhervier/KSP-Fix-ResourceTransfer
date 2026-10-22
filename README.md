@@ -135,6 +135,13 @@ to check it by hand:
   (see [Checked: other resources](#checked-other-resources)); ports that dock in flight join two vessels
   into one the same way, but that was not played. Dock a tanker to a ship and move fuel, oxidizer and
   monopropellant between them, and look for buttons that do nothing or a Stop that stays.
+- **Switching a tank's contents in flight.** B9PartSwitch can change what a tank holds in flight; it then
+  empties that tank's part action window and has it built again (`UIPartActionWindow.ClearList`,
+  `displayDirty`), alone, after the other windows. Its new transfer controls are then created the way the
+  oxidizer controls of [Checked: a tank of liquid fuel only](#checked-a-tank-of-liquid-fuel-only) are, and
+  stock should leave them unpaired, which this mod pairs. Read in its source, not played: with two tank
+  windows open, switch one tank's contents in flight, and press In or Out on it, without this mod and with
+  it. RealFuels (the tanks of RP-1) has a tank's window built again the same way when its tanks change.
 - **Mods that change part action windows, or move resources their own way.** A mod that adds, removes or
   rebuilds the items of a part action window could pair controls in its own way. None was tried. Kerbal
   Attachment System moves resources between two vessels linked by its pipe in a window of its own
@@ -142,7 +149,8 @@ to check it by hand:
   it alone. Once the pipe docks the two vessels into one, that window sends the player to the stock
   transfer, the one this mod fixes. That is read in its source, not played: link two vessels with a KAS
   pipe, move fuel through its window, dock them through the pipe, and move fuel with the part action
-  windows, without this mod and with it.
+  windows, without this mod and with it. AlternateResourcePanel, likewise, has In and Out buttons of its own,
+  in windows of its own, and moves the resources itself: this mod leaves them alone.
 
 ## Install
 
