@@ -1,0 +1,4 @@
+obj/
+GameData/KSPFixResourceTransfer/*.dll
+GameData/*.zip
+__pycache__/
