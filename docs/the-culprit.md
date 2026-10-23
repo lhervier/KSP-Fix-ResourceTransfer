@@ -62,6 +62,46 @@ each sees the other in `In`, and both show Stop, although nothing reaches them. 
 
 Pressing Stop on any tank of the transfer puts it and its targets back in `None`, and In and Out work again.
 
+What the two halves should look at is the other half of the transfer: a tank that takes keeps going only
+while a shown target sends, and a tank that sends only while a shown target takes. The same extract, so
+changed:
+
+```diff
+ if (state == FlowState.In)
+ {
+     bool stop = resource.amount >= resource.maxAmount || transferFraction == 0.0;
+     if (!stop)
+     {
+-        // Stop unless at least one shown target is not idle.
++        // Stop unless at least one shown target sends.
+         stop = true;
+         foreach (UIPartActionResourceTransfer target in targets)
+-            if (target.gameObject.activeInHierarchy && target.state != FlowState.None)
++            if (target.gameObject.activeInHierarchy && target.state == FlowState.Out)
+                 stop = false;
+     }
+     if (stop) FlowStop();
+     else { /* take a share from every shown target in Out */ }
+ }
+ else if (state == FlowState.Out)
+ {
+-    if (resource.amount <= 0.0) FlowStop();
++    bool stop = resource.amount <= 0.0;
++    if (!stop)
++    {
++        // Stop unless at least one shown target takes.
++        stop = true;
++        foreach (UIPartActionResourceTransfer target in targets)
++            if (target.gameObject.activeInHierarchy && target.state == FlowState.In)
++                stop = false;
++    }
++    if (stop) FlowStop();
+ }
+```
+
+This mod does not change `UpdateItem` itself: it stops the control after it, which comes to the same
+([The fix](the-fix.md), `stopIdleTransfers`).
+
 ## How controls are paired
 
 A control gets its targets from `UIPartActionController.SetupResourceTransfer`, called when the control is
@@ -72,6 +112,8 @@ a list the controller keeps, then adds it to that list:
 
 ```csharp
 // UIPartActionController.SetupResourceTransfer, KSP 1.12.5, shortened
+// trans: the control being set up.
+// transfers: the controller's list of the controls set up since it was last emptied.
 foreach (UIPartActionResourceTransfer other in transfers)
 {
     if (other.Resource.info.id != trans.Resource.info.id || other.Part == trans.Part) continue;
@@ -138,3 +180,33 @@ the FL-T200's oxidizer.*
 
 Closing the FL-T200's window leaves a single window open, which takes every transfer
 control away (`ShowTransfers` wants two windows); opening it again brings them all back together, paired.
+
+What a control should be paired with is what the player sees: the controls of the same resource that the
+other open windows show, whatever the frame they were created on. The extract of `SetupResourceTransfer`,
+so changed:
+
+```diff
+ // UIPartActionController.SetupResourceTransfer, KSP 1.12.5, shortened
+ // trans: the control being set up.
+-// transfers: the controller's list of the controls set up since it was last emptied.
+-foreach (UIPartActionResourceTransfer other in transfers)
++// windows: the controller's open windows.
++foreach (UIPartActionWindow window in windows)
++foreach (UIPartActionResourceTransfer other in window.ListItems.OfType<UIPartActionResourceTransfer>())
+ {
+     if (other.Resource.info.id != trans.Resource.info.id || other.Part == trans.Part) continue;
++    // A destroyed target makes a control invalid, and its window builds it again.
++    other.Targets.RemoveAll(target => target == null);
+     if (!other.Targets.Contains(trans)) other.Targets.Add(trans);
+     if (!trans.Targets.Contains(other)) trans.Targets.Add(other);
+ }
+ if (!transfers.Contains(trans)) transfers.Add(trans);
+```
+
+The second change is needed by the first. A window built again leaves its old, destroyed controls in the
+targets of the other windows' controls; on stock, its new controls are paired with nothing, and that ends
+there. Paired with them, a destroyed target left in place would have the other window's control built
+again, which would leave a destroyed target in turn, and so on, on every frame.
+
+This mod does not change `SetupResourceTransfer` itself: it pairs the control just before it, which comes
+to the same ([The fix](the-fix.md), `linkAllTransfers`).
