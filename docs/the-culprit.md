@@ -141,24 +141,72 @@ controls of a resource are destroyed and created again together, and stay paired
   holding the resource of its first transfer control, and builds again (`CreatePartList`) the windows
   holding that resource without a transfer control for it.
 
-The case that breaks is a part holding only some of the resources:
+The case that breaks is a part holding only some of the resources. Below, the windows go by the letters
+KSP Diag - Resource Transfer gives them: A for the tanker's, B for the fuselage's, C for the FL-T200's. After
+each step, a table gives the targets of every transfer control, and the line under it what the controller's
+list holds. A click is handled in the frame it happens in: `UIPartActionController.UpdateFlight` calls
+`SelectPart`, then `UpdateActiveWindows`.
 
-1. The tanker's window is pinned: an FL-T400, with liquid fuel and oxidizer.
-2. The window of a Mk1 Liquid Fuel Fuselage opens. `ShowTransfers` is false for oxidizer only: at the
-   next update of the windows, the tanker's oxidizer control is destroyed. Its liquid fuel control stays.
+1. The tanker's window is opened and pinned: an FL-T400, with liquid fuel and oxidizer.
+
+   ![The tanker's window alone, without any transfer control](../imgs/the-culprit/fuel-only-0-tanker.jpg)
+
+   It is the only window open, and `ShowTransfers` wants two: no transfer control.
+
+   | Window | Liquid fuel | Oxidizer |
+   |---|---|---|
+   | A (FL-T400) | no control | no control |
+
+   `transfers`: empty.
+
+2. The window of a Mk1 Liquid Fuel Fuselage opens.
 
    ![The tanker's window without an oxidizer transfer control, next to the fuselage's](../imgs/the-culprit/fuel-only-1-fuselage.jpg)
 
-3. The window of an FL-T200, with liquid fuel and oxidizer, opens, which closes the fuselage's. Its two
-   controls are created; `SelectPart` refreshes the windows holding its first resource, liquid fuel, and
-   the two liquid fuel controls are paired. The tanker's window still holds a liquid fuel transfer control,
-   so it is not built again.
-4. The next run of `UpdateActiveWindows` (on the next frame, after a click of the mouse) empties the
-   list, then the tanker's window creates its oxidizer control again. It is paired with what the list holds:
-   nothing. The game's own windows do not show it: their oxidizer rows have their In and Out buttons, as
-   when they are paired. The badges of KSP Diag - Resource Transfer do: `→ —` on both oxidizer rows.
+   `ShowTransfers` is true for liquid fuel only: the fuselage holds no oxidizer. `SelectPart` creates B's liquid fuel control, which the list, empty, pairs
+   with nothing; then, A holding liquid fuel without a transfer control for it, builds A again, whose new
+   liquid fuel control is paired with B's. `UpdateActiveWindows` then empties the list, and creates nothing.
+
+   | Window | Liquid fuel | Oxidizer |
+   |---|---|---|
+   | A (FL-T400) | → B | no control |
+   | B (fuselage) | → A | no oxidizer |
+
+   `transfers`: B's and A's liquid fuel controls after `SelectPart`, empty after `UpdateActiveWindows`.
+
+3. The window of an FL-T200, with liquid fuel and oxidizer, opens, which closes the fuselage's: B is
+   hidden, with its control, which stays among A's targets.
 
    ![The tanker's window and the FL-T200's, both oxidizer rows paired with nothing](../imgs/the-culprit/fuel-only-2-tank.jpg)
+
+   `ShowTransfers` is now true for both resources.
+   `SelectPart` creates C's two controls, which the list, empty, pairs with nothing; then refreshes the
+   windows holding a transfer control of C's first resource, liquid fuel: A's liquid fuel control is paired
+   with C's. A holds a liquid fuel transfer control, so it is not built again, and still has no oxidizer
+   control.
+
+   | Window | Liquid fuel | Oxidizer |
+   |---|---|---|
+   | A (FL-T400) | → (B), C | no control |
+   | B (fuselage, closed) | → A | no oxidizer |
+   | C (FL-T200) | → A | → — |
+
+   `transfers`: C's liquid fuel and oxidizer controls, A's liquid fuel control.
+
+4. In the same frame, `UpdateActiveWindows` empties the list, then updates every window. A now shows
+   oxidizer transfers, and creates its oxidizer control: it is paired with what the list holds, nothing.
+   C's oxidizer control was registered before the list was emptied, and nothing refreshes it: it stays
+   paired with nothing too. The game's own windows do not show it: their oxidizer rows have their In and
+   Out buttons, as when they are paired. The badges of KSP Diag - Resource Transfer do: `→ —` on both
+   oxidizer rows.
+
+   | Window | Liquid fuel | Oxidizer |
+   |---|---|---|
+   | A (FL-T400) | → (B), C | → — |
+   | B (fuselage, closed) | → A | no oxidizer |
+   | C (FL-T200) | → A | → — |
+
+   `transfers`: A's oxidizer control, until the next frame empties it.
 
 *KSP 1.12.5 without this mod, with KSP Community Fixes, in French (Sortie is Out, Entrée is In, Ergol
 liquide is liquid fuel, Oxydant oxidizer), with
@@ -166,7 +214,8 @@ liquide is liquid fuel, Oxydant oxidizer), with
 windows, A for the tanker's, B for the fuselage's, C for the FL-T200's, and its badge on each transfer row
 gives the letters of the windows the row is paired with, in brackets when closed. The two windows cropped
 from the screenshots of the [liquid-fuel-only protocol](checking-the-culprit-fuel-only.md#the-protocol),
-after its steps 2 and 3: the tanker's on the left, pinned, the other one on the right.*
+after its steps 2 and 3: the tanker's on the left, pinned, the other one on the right. The tanker's window
+alone was taken the same way, after its step 1.*
 
 From then on, the oxidizer controls of the tanker and of the FL-T200 have no target. In makes the control
 take from nobody: it goes to `In` with nothing to share between (`transferFraction` 0) and stops at the
