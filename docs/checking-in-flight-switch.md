@@ -36,8 +36,8 @@ FL-T200 loads as LFO. Copy the save into the folder of a sandbox game, and load 
    left, thirty seconds at most, and note it again, with the buttons of both tanks.
 
 **Played by a script.** [run-transfers.py](../diag/automation/run-transfers.py), with
-`--protocol in-flight-switch`. For step 2, it calls `ModuleB9PartSwitch.SwitchSubtype` with `LiquidFuel`,
-which is what the LiquidFuel button of that dialog calls. It takes a screenshot after steps 1 and 2, and the
+`--protocol in-flight-switch`. For step 2, it presses *Select Tank* in the FL-T200's window, then the
+LiquidFuel button of the dialog that opens, as a click does. It takes a screenshot after steps 1 and 2, and the
 two of step 4.
 
 ## On stock

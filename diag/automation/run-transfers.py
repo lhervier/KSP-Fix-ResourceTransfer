@@ -383,9 +383,10 @@ def in_flight_switch(options, out):
     open_at(tanker, LEFT, pin=True)
     open_at(tank, RIGHT)
     step(record, out, "1-before")
-    # What the button of B9PartSwitch's in-flight dialog calls (PartSwitchFlightDialog).
-    call("call_method", type="B9PartSwitch.ModuleB9PartSwitch", method="SwitchSubtype", arguments=["LiquidFuel"],
-         match="part.persistentId=%d" % tank)
+    # As the player does: Select Tank in the tank's window (its event, the same in every language), then the
+    # LiquidFuel button of the dialog B9PartSwitch opens.
+    call("press_part_button", part=tank, button="ShowSubtypesWindow")
+    call("press_dialog_button", dialog="B9PartSwitch_SwitchInFlight", button="LiquidFuel")
     time.sleep(1)
     step(record, out, "2-switched")
     call("press_part_button", part=tank, resource="LiquidFuel", transfer="in")
