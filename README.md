@@ -145,9 +145,20 @@ liquid fuel moves until the tanker is out of it.
 ## Work in progress
 
 Both patches act on every resource transfer of every part action window. Each point below is a place
-where this mod changes what stock does, and so where it could break something. What you would see, and how
-to check it by hand:
+where this mod changes what stock does, and so where it could break something, or a stock problem it does
+not fix yet. What you would see, and how to check it by hand:
 
+- **Transfer buttons that do nothing during time warp.** Under on-rails time warp, the In, Out and Stop
+  buttons stay in the part action windows, but a click on them does nothing:
+  `UIPartActionResourceTransfer.OnBtnIn`, `OnBtnOut` and `OnBtnStop` ignore the click while the controls of
+  the vessel are locked, and `TimeWarp.setRate` locks them for on-rails warp, not for physics warp. A
+  transfer started before the warp goes on flowing. Nothing tells the buttons are dead: the player presses
+  Out, nothing moves, and the transfer looks broken. A third patch, with a setting of its own, will grey the
+  three buttons out while a click on them would be ignored, and give them back when the warp ends. Greyed
+  out rather than hidden, Stop still shows that a transfer flows during the warp. It will leave them alone
+  when KSP loses the focus: KSP locks every control then, and stops updating the windows anyway. Read in
+  the stock code, not played yet: with two tank windows open, start on-rails warp and press Out; do the
+  same under physics warp; and start a transfer before warping, then press Stop during the warp.
 - **RealFuels' tanks changed in flight.** RealFuels (the tanks of RP-1) has a tank's part action window
   built again when its tanks change, as B9PartSwitch does in
   [Checked: a tank's contents switched in flight](#checked-a-tanks-contents-switched-in-flight). Read in its
