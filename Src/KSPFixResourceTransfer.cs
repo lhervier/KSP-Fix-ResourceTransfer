@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 
@@ -16,7 +17,9 @@ namespace com.github.lhervier.ksp.fix.resourcetransfer
         private void Start()
         {
             Settings.Load();
-            Log.Info($"Version {typeof(KSPFixResourceTransfer).Assembly.GetName().Version}, " +
+            string version = typeof(KSPFixResourceTransfer).Assembly
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+            Log.Info($"Version {version}, " +
                 $"stopIdleTransfers {Settings.StopIdleTransfers}, linkAllTransfers {Settings.LinkAllTransfers}, " +
                 $"log level {Log.Level}");
             Harmony harmony = new Harmony(HarmonyId);
